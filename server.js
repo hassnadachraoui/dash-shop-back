@@ -1,15 +1,21 @@
-const dotenv = require("dotenv").config();
+const dotenv = require("dotenv").config(); // Assurez-vous que ceci est au tout début du fichier
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const errorHandler = require("./middleware/errorMiddleware");
 const userRoute = require("./routes/userRoute");
-const errorHandler = require("./middleware/errorMiddleware")
-
+const productRoute = require("./routes/productRoute");
+const categoryRoute = require("./routes/categoryRoute");
+const brandRoute = require("./routes/brandRoute");
+const couponRoute = require("./routes/couponRoute");
+const orderRoute = require("./routes/orderRoute");
 
 const app = express();
 
-//MiddleWares
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
@@ -22,6 +28,11 @@ app.use(
 
 // Routes
 app.use("/api/users", userRoute);
+app.use("/api/products", productRoute);
+app.use("/api/category", categoryRoute);
+app.use("/api/brand", brandRoute);
+app.use("/api/coupon", couponRoute);
+app.use("/api/order", orderRoute);
 
 app.get("/", (req, res) => {
   res.send("Home Page...");
@@ -29,6 +40,7 @@ app.get("/", (req, res) => {
 
 // Error Middleware
 app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 
 mongoose
