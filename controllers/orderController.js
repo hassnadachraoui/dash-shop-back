@@ -1,11 +1,12 @@
 const asyncHandler = require("express-async-handler");
 const Order = require("../models/orderModel");
-const { calculateTotalPrice } = require("../utils");
+const { calculateTotalPrice, updateProductQuantity } = require("../utils");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Product = require("../models/productModel");
 const sendEmail = require("../utils/sendEmail");
 const { orderSuccessEmail } = require("../emailTemplates/orderTemplate");
 
+//Create new order
 const createOrder = asyncHandler(async (req, res) => {
   const {
     orderDate,
@@ -36,6 +37,9 @@ const createOrder = asyncHandler(async (req, res) => {
     paymentMethod,
     coupon,
   });
+
+  //Update product quantity
+  await updateProductQuantity(cartItems);
 
   //Send order Email to the user
   const subject = "New Order Placed - DashShop";
@@ -82,6 +86,8 @@ const getOrder = asyncHandler(async (req, res) => {
 
 // Update Order Status
 const updateOrderStatus = asyncHandler(async (req, res) => {
+  console.log("Order ID:", req.params.id); // Vérification de l'ID ici
+
   const { orderStatus } = req.body;
   const { id } = req.params;
 
@@ -91,16 +97,12 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Order not found");
   }
+
   //Update the order status
   await Order.findByIdAndUpdate(
     { _id: id },
-    {
-      orderStatus,
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
+    { orderStatus },
+    { new: true, runValidators: true }
   );
 
   res.status(200).json({ message: "Order status updated" });
@@ -151,10 +153,16 @@ const payWithStripe = asyncHandler(async (req, res) => {
   });
 });
 
+//Verify FLW payment
+const verifyFlwPayment = asyncHandler(async(req, res) => {
+  res.send("Correct")
+})
+
 module.exports = {
   createOrder,
   getOrders,
   getOrder,
   updateOrderStatus,
   payWithStripe,
+  verifyFlwPayment
 };

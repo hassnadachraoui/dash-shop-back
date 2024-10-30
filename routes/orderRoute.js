@@ -6,10 +6,12 @@ const {
   getOrder,
   updateOrderStatus,
   payWithStripe,
+  verifyFlwPayment,
 } = require("../controllers/orderController");
 const router = express.Router();
 
 // Routes
+router.get("/response", verifyFlwPayment);
 router.post("/", protect, createOrder);
 
 router.get("/", protect, getOrders);

@@ -14,7 +14,7 @@ const couponRoute = require("./routes/couponRoute");
 const orderRoute = require("./routes/orderRoute");
 
 const app = express();
-
+ 
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
